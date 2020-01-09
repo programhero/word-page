@@ -27,13 +27,13 @@
       <el-button type="primary" @click="addRecord()" icon="el-icon-plus">添加</el-button>
     </div>
     <el-dialog :visible="formVisible" width="1200px" :before-close="() => formVisible = false">
-      <el-form :model="form" label-width="80px" :rules="formRules">
+      <el-form ref="form" :model="form" label-width="80px" :rules="formRules">
         <el-row>
           <el-col :span="6">      <el-form-item  label="单词:" prop="wordd">
         <el-input v-model="form.wordd" @change="worddChange"></el-input>
       </el-form-item></el-col>
           <el-col :span="6">
-                  <el-form-item  label="类型:">
+                  <el-form-item  label="类型:" prop="wordType">
         <el-select v-model="form.wordType">
           <el-option v-for="type in wordTypes" :key="type" :value="type"></el-option>
         </el-select>
@@ -132,10 +132,16 @@
       <el-table-column
         prop="example"
         label="例句">
+        <template slot-scope="scope">
+          <show-message :msg="scope.row.example"></show-message>
+        </template>
       </el-table-column>
       <el-table-column
         prop="remark"
         label="备注">
+                <template slot-scope="scope">
+          <show-message :msg="scope.row.remark"></show-message>
+        </template>
       </el-table-column>
       <el-table-column width="140"
         prop="createdTime"
@@ -144,6 +150,14 @@
       <el-table-column width="140"
         prop="lastUpdatedTime"
         label="最后更新时间">
+      </el-table-column>
+      <el-table-column width="100" label="操作">
+        <template slot-scope="scope">
+          <a class="link-type" @click="del(scope.row.id)()">
+              删除
+          </a>
+        </template>
+
       </el-table-column>
     </el-table>
     <el-pagination
@@ -159,6 +173,9 @@
 </template>
 
 <script>
+import ShowMessage from './components/ShowMessage'
+
+
 const wordTypes = [
   '名词',
   '动词',
@@ -204,6 +221,7 @@ function urlParse(obj) {
 export default {
   name: 'app',
   components: {
+    ShowMessage
   },
   mounted() {
     this.search()
@@ -220,12 +238,34 @@ export default {
           themes,
           wordTypes,
           formRules: {
-            wordd: [{ required: true, message: '请输入单词', trigger: 'blur' },]
+            wordd: [{ required: true, message: '请输入单词', trigger: 'blur' }],
+            wordType: [{ required: true, message: '请选择单词类型', trigger: 'blur' }]
           },
           isAdded: false
     }
   },
   methods: {
+    del(id) {
+      return () => {
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          window.fetch('/api/v1/word/'+id, {
+            method: 'DELETE'
+          }).then((resp) => {
+            if (resp.ok) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.search()
+            }
+          })
+        });
+      }
+    },
     handleSizeChange(pageSize) {
       this.searcherForm.size = pageSize
       this.pageSize = pageSize
@@ -270,21 +310,23 @@ export default {
       })
     },
     save() {
-      window.console.log(this.form)
-      let body = Object.assign({}, this.form)
-      if (this.isAdded) {
-        body.id = null
-        body.frequency = 1
-      }
-      fetch('/api/v1/word', {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body),
-        method: 'POST'
-      }).then(() => {
-        this.search()
-        this.formVisible = false
+      this.$refs['form'].validate().then(() => {
+        window.console.log(this.form)
+        let body = Object.assign({}, this.form)
+        if (this.isAdded) {
+          body.id = null
+          body.frequency = 1
+        }
+        fetch('/api/v1/word', {
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body),
+          method: 'POST'
+        }).then(() => {
+          this.search()
+          this.formVisible = false
+        })
       })
     },
     resetForm() {
@@ -309,5 +351,13 @@ export default {
 }
 .form {
   text-align: left;
+}
+.link-type {
+  color: #337ab7;
+  cursor: pointer;
+}
+
+.link-type:hover,.link-type:focus {
+    color: rgb(32, 160, 255);
 }
 </style>
