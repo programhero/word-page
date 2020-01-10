@@ -68,6 +68,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
+            <el-form-item label="释义">
+                <el-input v-model="form.interpretation" type="textarea" size="4"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item label="例句:">
                 <el-input v-model="form.example" type="textarea" size="4"></el-input>
             </el-form-item>
@@ -131,6 +136,13 @@
         label="固搭">
       </el-table-column>
       <el-table-column
+        prop="interpretation"
+        label="释义">
+        <template slot-scope="scope">
+          <show-message :msg="scope.row.interpretation"></show-message>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="example"
         label="例句">
         <template slot-scope="scope">
@@ -162,6 +174,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+    style="margin-bottom:20px"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
@@ -170,6 +183,9 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+  <div>
+    源码: <a href="https://github.com/programhero/word" target="_blank">https://github.com/programhero/word</a>
+  </div>
   </div>
 </template>
 
@@ -363,5 +379,9 @@ export default {
 }
 .el-dialog__header {
   background: rgb(32, 160, 255);
+}
+.el-table th {
+  background: rgb(32, 160, 255);
+  color: white
 }
 </style>
