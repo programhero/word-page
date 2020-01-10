@@ -27,7 +27,7 @@
       <el-button type="primary" @click="addRecord()" icon="el-icon-plus">添加</el-button>
       Ä ä ö ü ß äß üß Ö Ü
     </div>
-    <el-dialog :visible="formVisible" width="1200px" :before-close="() => formVisible = false">
+    <el-dialog title="信息录入 Ä ä ö ü ß äß üß Ö Ü" :visible="formVisible" width="1200px" :before-close="() => formVisible = false">
       <el-form ref="form" :model="form" label-width="80px" :rules="formRules">
         <el-row>
           <el-col :span="6">      <el-form-item  label="单词:" prop="wordd">
@@ -342,7 +342,7 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  text-align: left;
   color: #2c3e50;
   margin-top: 60px;
 }
@@ -360,5 +360,8 @@ export default {
 
 .link-type:hover,.link-type:focus {
     color: rgb(32, 160, 255);
+}
+.el-dialog__header {
+  background: rgb(32, 160, 255);
 }
 </style>
