@@ -25,6 +25,7 @@
     <div style="text-align:left;margin-bottom:8px">
       <el-button type="success" @click="exportXsl()" icon="el-icon-download">导出</el-button>
       <el-button type="primary" @click="addRecord()" icon="el-icon-plus">添加</el-button>
+      Ä ä ö ü ß äß üß Ö Ü
     </div>
     <el-dialog :visible="formVisible" width="1200px" :before-close="() => formVisible = false">
       <el-form ref="form" :model="form" label-width="80px" :rules="formRules">
